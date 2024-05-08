@@ -23,7 +23,7 @@ We will define 'performance' as Win/Loss ratio = $\frac{number \ of \ wins}{numb
 'Correlation' will be defined by `pearsonr` (as calculated by Scipy's [Pearson R class](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html))  
 
 Since metropolitan regions vary in names (e.g. 'New York Metropolitan', 'Greater New York', 'NYC Metro Area', etc),  
-for the purposes of this project we will use the data source names as the 'official' region name of a given sports team.  
+for this project we will use the data source names as the 'official' region name of a given sports team.  
 Thus, Oakland Raiders will be mapped to the given region, 'San Francisco Bay Area' and not 'Oakland Metro'.
 
 ## Dataset
