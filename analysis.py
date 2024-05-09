@@ -1,11 +1,14 @@
 import pandas as pd
-import numpy as np
 import scipy.stats as stats
+import preprocessing
 
-class Analysis():
+class SportAnalysis():
 
-    def __init__(self) -> None:
-        pass
+    ## Sport Name must be same format as performance_data string format, e.g. 'NHL'
+    def __init__(self, sport_name, performance_data, sport_pop_data):
+        self.sport = sport_name
+        self.data = performance_data
+        self.pop = sport_pop_data
 
     def split_team_names(self, string):
         split = string.split(' ')
@@ -25,26 +28,31 @@ class Analysis():
         for region_team in self.split_team_names(region_team_string): 
             if region_team in team_to_match: return region_team
 
-
     def nhl_correlation(self): 
-        def match_metro(row): return nhl_pop['NHL'].apply(lambda x: match_teams(x, row)).dropna().index[0]
-        nhl['Metropolitan area'] = nhl['team'].apply(match_metro)
-        city_ratios = nhl[['W/L ratio', 'Metropolitan area']].groupby('Metropolitan area').mean()
-        nhl_pop = nhl_pop.merge(city_ratios, on='Metropolitan area')
+        def match_metro(row): return self.pop[self.sport].apply(lambda x: self.match_teams(x, row)).dropna().index[0]
+        self.data['Metropolitan area'] = self.data['team'].apply(match_metro)
+        self.data['W/L ratio'] = self.data['W'].apply(int) / (self.data['W'].apply(int) + self.data['L'].apply(int))
+        city_ratios = self.data[['W/L ratio', 'Metropolitan area']].groupby('Metropolitan area').mean()
+        self.pop = self.pop.merge(city_ratios, on='Metropolitan area')
 
-        population_by_region = nhl_pop['Population (2016 est.)[8]'].apply(int) # pass in metropolitan area population from cities
-        win_loss_by_region = nhl_pop['W/L ratio'] # pass in win/loss ratio from nhl_df in the same order as cities["Metropolitan area"]
-        
-        assert len(population_by_region) == len(win_loss_by_region), "Q1: Your lists must be the same length"
-        assert len(population_by_region) == 28, "Q1: There should be 28 teams being analysed for NHL"
+        return stats.pearsonr(self.pop['Population (2016 est.)[8]'].apply(int), self.pop['W/L ratio'])[0]
 
-        assert len(population_by_region) == len(win_loss_by_region), "Q2: Your lists must be the same length"
-        assert len(population_by_region) == 28
+    # def check_correct(self):
+    #     assert len(population_by_region) == len(win_loss_by_region), "Q1: Your lists must be the same length"
+    #     assert len(population_by_region) == 28, "Q1: There should be 28 teams being analysed for NHL"
 
-        assert len(population_by_region) == len(win_loss_by_region), "Q3: Your lists must be the same length"
-        assert len(population_by_region) == 26
+    #     assert len(population_by_region) == len(win_loss_by_region), "Q2: Your lists must be the same length"
+    #     assert len(population_by_region) == 28
 
-        assert len(population_by_region) == len(win_loss_by_region), "Q4: Your lists must be the same length"
-        assert len(population_by_region) == 29
-        
-        return stats.pearsonr(population_by_region, win_loss_by_region)[0]
+    #     assert len(population_by_region) == len(win_loss_by_region), "Q3: Your lists must be the same length"
+    #     assert len(population_by_region) == 26
+
+    #     assert len(population_by_region) == len(win_loss_by_region), "Q4: Your lists must be the same length"
+    #     assert len(population_by_region) == 29
+
+
+processor = preprocessing.PreProcessData()
+processor.process_pop_data()
+processor.process_performance_data()
+analysis = SportAnalysis('NHL', processor.nhl, processor.nhl_pop)
+print(analysis.nhl_correlation())
