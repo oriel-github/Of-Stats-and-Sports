@@ -39,6 +39,12 @@ class SportAnalysis(Data):
         self.corr = stats.pearsonr(self.pop_data[self.pop_index()].apply(int), self.pop_data['W/L ratio'])[0]
 
 
+class Analysis(SportAnalysis):
+
+    def __init__(self, formatted_population_data, population_sport_name, sport_data_filename):
+        super().__init__(formatted_population_data, population_sport_name, sport_data_filename)
+
+
 sport_data_paths = ["assets/nhl.csv", "assets/nba.csv", "assets/nfl.csv", "assets/mlb.csv"]
 sport_name = 'NHL', 'NBA', 'NFL', 'MLB'
 population_data = pd.read_html("assets/wikipedia_data.html")[1].iloc[:-1,[0,3,5,6,7,8]].set_index('Metropolitan area')
