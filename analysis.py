@@ -1,16 +1,16 @@
+import pandas as pd
 import scipy.stats as stats
-import preprocessing
+from preprocessing import PreProcessData as Data
 
-class SportAnalysis():
+class SportAnalysis(Data):
 
     ## Sport Name must be same format as performance_data string format, e.g. 'NHL'
     ## Assumes population and performance df are preprocessed
-    def __init__(self, sport_name, performance_data, sport_pop_data):
-        self.sport, self.data, self.pop, self.corr = sport_name, performance_data, sport_pop_data, None
-        # preprocessing.PreProcessData.__init__(self)
-
-    def pop_index_helper(self):
-        return self.pop_index()
+    def __init__(self, formatted_population_data, population_sport_name, sport_data_filename):
+        Data.__init__(self, formatted_population_data, population_sport_name, sport_data_filename)
+        self.process_performance_data()
+        self.process_pop_data()
+        self.corr = None
 
     def split_team_names(self, string):
         split = string.split(' ')
@@ -31,17 +31,19 @@ class SportAnalysis():
             if region_team in team_to_match: return region_team
 
     def get_correlation(self): 
-        def match_metro(row): return self.pop[self.sport].apply(lambda x: self.match_teams(x, row)).dropna().index[0]
+        def match_metro(row): return self.pop_data[self.sport].apply(lambda x: self.match_teams(x, row)).dropna().index[0]
         self.data['Metropolitan area'] = self.data['team'].apply(match_metro)
         self.data['W/L ratio'] = self.data['W'].apply(int) / (self.data['W'].apply(int) + self.data['L'].apply(int))
         city_ratios = self.data[['W/L ratio', 'Metropolitan area']].groupby('Metropolitan area').mean()
-        self.pop = self.pop.merge(city_ratios, on='Metropolitan area')
-        self.corr = stats.pearsonr(self.pop['Population (2016 est.)[8]'].apply(int), self.pop['W/L ratio'])[0]
+        self.pop_data = self.pop_data.merge(city_ratios, on='Metropolitan area')
+        self.corr = stats.pearsonr(self.pop_data[self.pop_index()].apply(int), self.pop_data['W/L ratio'])[0]
 
 
-processor = preprocessing.PreProcessData()
-processor.process_pop_data()
-processor.process_performance_data()
-analysis = SportAnalysis('NFL', processor.nfl, processor.nfl_pop)
-analysis.get_correlation()
-print(analysis.corr)
+sport_data_paths = ["assets/nhl.csv", "assets/nba.csv", "assets/nfl.csv", "assets/mlb.csv"]
+sport_name = 'NHL', 'NBA', 'NFL', 'MLB'
+population_data = pd.read_html("assets/wikipedia_data.html")[1].iloc[:-1,[0,3,5,6,7,8]].set_index('Metropolitan area')
+
+for n in [0, 1, 2, 3]:
+    analysis = SportAnalysis(population_data, sport_name[n], sport_data_paths[n])
+    analysis.get_correlation()
+    print(analysis.corr)
