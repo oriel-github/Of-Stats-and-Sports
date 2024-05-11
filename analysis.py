@@ -2,7 +2,7 @@ import pandas as pd
 import scipy.stats as stats
 from preprocessing import PreProcessData as Data
 
-class MetroPerformanceCorrelationBySport(Data):
+class Correlation(Data):
 
     ## Sport Name must be same format as performance_data string format, e.g. 'NHL'
     def __init__(self, formatted_metro_data, metro_sport_name, sport_data_filename):
@@ -44,7 +44,7 @@ class MetroPerformanceCorrelationBySport(Data):
         self.corr = stats.pearsonr(self.metro_data[self.pop_index()].apply(int), self.metro_data['W/L ratio'])[0]
 
 
-class MetroPerformanceCorrelationAllSports():
+class Correlations():
 
     ## Sport names and Data filenames need to match in length and sport order
     def __init__(self, formatted_metro_data, metro_sport_names, sport_data_filenames):
@@ -53,7 +53,7 @@ class MetroPerformanceCorrelationAllSports():
 
         self.metro_perform_corr_by_sport = {}
         for sport, data in zip(metro_sport_names, sport_data_filenames):
-            metro_perform_corr = MetroPerformanceCorrelationBySport(formatted_metro_data, sport, data)
+            metro_perform_corr = Correlation(formatted_metro_data, sport, data)
             metro_perform_corr.match_team_to_metro()
             metro_perform_corr.get_team_performances()
             metro_perform_corr.get_metro_to_performance_correlation()
@@ -79,8 +79,8 @@ class MetroPerformanceCorrelationAllSports():
             metro_perform_data_by_sport_pairs[pair[0] + '_' + pair[1]] = pair_metro_data
         return metro_perform_data_by_sport_pairs
 
-    def get_metro_perform_corr_by_sport_pairs(self):
-        
+    # def get_metro_perform_corr_by_sport_pairs(self):
+
 
 
 
@@ -94,5 +94,5 @@ metro_data = pd.read_html("assets/wikipedia_data.html")[1].iloc[:-1,[0,3,5,6,7,8
 #     analysis.get_correlation()
 #     print(analysis.corr)
 
-results = MetroPerformanceCorrelationAllSports(metro_data, sport_name, sport_data_paths)
+results = Correlations(metro_data, sport_name, sport_data_paths)
 print(results.get_metro_perform_data_by_sport_pairs())
