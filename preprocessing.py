@@ -2,11 +2,11 @@ import pandas as pd
 
 class PreProcessData():
 
-    def __init__(self, formatted_metro_data, metro_sport_name, sport_data_filename):
+    def __init__(self, formatted_metro_data, sport, sport_file):
         self.metro = formatted_metro_data
-        self.sport = metro_sport_name
+        self.sport = sport
         self.metro_data = None
-        self.data = pd.read_csv(sport_data_filename)
+        self.data = pd.read_csv(sport_file)
 
     ## Add Assert if no pop data in tests
     def pop_index(self):
