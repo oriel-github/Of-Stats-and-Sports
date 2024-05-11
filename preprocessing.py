@@ -2,19 +2,20 @@ import pandas as pd
 
 class PreProcessData():
 
-    def __init__(self, formatted_population_data, population_sport_name, sport_data_filename):
-        self.population = formatted_population_data
-        self.sport = population_sport_name
-        self.pop_data = None
+    def __init__(self, formatted_metro_data, metro_sport_name, sport_data_filename):
+        self.metro = formatted_metro_data
+        self.sport = metro_sport_name
+        self.metro_data = None
         self.data = pd.read_csv(sport_data_filename)
 
+    ## Add Assert if no pop data in tests
     def pop_index(self):
-        for col in self.population.columns: 
+        for col in self.metro.columns: 
             if 'Population' in col: return col
 
     def process_pop_data(self):
-        self.population[self.sport] = self.population[self.sport].replace("—", "").str.replace("\[.*\]","",regex=True)
-        self.pop_data = self.population[self.population[self.sport].str.contains('\w+')][[self.pop_index(),self.sport]]
+        self.metro[self.sport] = self.metro[self.sport].replace("—", "").str.replace("\[.*\]","",regex=True)
+        self.metro_data = self.metro[self.metro[self.sport].str.contains('\w+')][[self.pop_index(),self.sport]]
 
     def process_performance_data(self):
         self.data = self.data.drop(self.data.index[self.data['year'] != 2018])
@@ -27,9 +28,9 @@ class PreProcessData():
 
 # sport_data_paths = ["assets/nhl.csv", "assets/nba.csv", "assets/nfl.csv", "assets/mlb.csv"]
 # sport_name = 'NHL', 'NBA', 'NFL', 'MLB'
-# population_data = pd.read_html("assets/wikipedia_data.html")[1].iloc[:-1,[0,3,5,6,7,8]].set_index('Metropolitan area')
+# metro_data = pd.read_html("assets/wikipedia_data.html")[1].iloc[:-1,[0,3,5,6,7,8]].set_index('Metropolitan area')
 
 # for n in [0, 1, 2, 3]:
-#     processor = PreProcessData(population_data, sport_name[n], sport_data_paths[n])
+#     processor = PreProcessData(metro_data, sport_name[n], sport_data_paths[n])
 #     processor.process_pop_data()
-#     print(processor.pop_data)
+#     print(processor.metro_data)
