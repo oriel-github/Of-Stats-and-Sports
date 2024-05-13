@@ -1,6 +1,7 @@
 import pandas as pd
 import scipy.stats as stats
 from preprocessing import PreProcessData as Data
+from cartesian_product import get_combinations_of, combos_in_cartesian
 
 class MetroCorrelations(Data):
 
@@ -58,16 +59,6 @@ class SportCorrelations():
         metro_corr.get_performances()
         metro_corr.get_metro_performance_corr()
         return metro_corr
-
-    def get_pairs_of(self, unpaired_list):
-        pair_list, i = [], 0
-        while i < len(unpaired_list):
-            j = i + 1
-            while j < len(unpaired_list):
-                pair_list.append([unpaired_list[i], unpaired_list[j]])
-                j += 1
-            i += 1
-        return pair_list
     
     def get_corr_df_pair(self, sport_pair):
         return self.metro_corrs[sport_pair[0]].df.iloc[:,[0,2]], self.metro_corrs[sport_pair[1]].df.iloc[:,[0,2]]
@@ -80,11 +71,11 @@ class SportCorrelations():
         return sport_pair_string_list[0] + '_' + sport_pair_string_list[1]
     
     def get_pair_corrs(self):
-        pairs = self.get_pairs_of(self.sports)
-        self.pair_corrs = {self.get_pair_name(p):self.get_pair_corr(self.get_corr_df_pair(p)) for p in pairs}
+        pairs = get_combinations_of(self.sports)
+        self.pair_corrs = {p:self.get_pair_corr(self.get_corr_df_pair(p)) for p in pairs}
     
     def get_pair_corr_test(self, sport_corr_df):
-        return stats.ttest_rel(sport_corr_df['W/L ratio_x'], sport_corr_df['W/L ratio_x'])
+        return stats.ttest_rel(sport_corr_df['W/L ratio_x'], sport_corr_df['W/L ratio_y'])
     
     def get_pair_corr_tests(self):
         self.pair_corr_tests = {pair:self.get_pair_corr_test(corr) for pair, corr in self.pair_corrs.items()}
@@ -92,21 +83,17 @@ class SportCorrelations():
     def get_pair_corr_pvals(self):
         self.pair_corr_pvals = {pair:test.pvalue for pair, test in self.pair_corr_tests.items()}
 
-    # def make_pval_matrix(self):
+    def get_pval_matrix(self):
+        return combos_in_cartesian(self.pair_corr_pvals)
 
 
+if __name__ == "__main__":
+    sport_data_paths = ["assets/nhl.csv", "assets/nba.csv", "assets/nfl.csv", "assets/mlb.csv"]
+    sport_name = 'NHL', 'NBA', 'NFL', 'MLB'
+    metro_data = pd.read_html("assets/wikipedia_data.html")[1].iloc[:-1,[0,3,5,6,7,8]].set_index('Metropolitan area')
 
-
-
-
-
-
-sport_data_paths = ["assets/nhl.csv", "assets/nba.csv", "assets/nfl.csv", "assets/mlb.csv"]
-sport_name = 'NHL', 'NBA', 'NFL', 'MLB'
-metro_data = pd.read_html("assets/wikipedia_data.html")[1].iloc[:-1,[0,3,5,6,7,8]].set_index('Metropolitan area')
-
-results = SportCorrelations(metro_data, sport_name, sport_data_paths)
-results.get_pair_corrs()
-results.get_pair_corr_tests()
-results.get_pair_corr_pvals()
-print(results.pair_corr_pvals)
+    results = SportCorrelations(metro_data, sport_name, sport_data_paths)
+    results.get_pair_corrs()
+    results.get_pair_corr_tests()
+    results.get_pair_corr_pvals()
+    print(results.get_pval_matrix())

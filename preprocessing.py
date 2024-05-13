@@ -26,11 +26,12 @@ class PreProcessData():
 
 
 
-# sport_data_paths = ["assets/nhl.csv", "assets/nba.csv", "assets/nfl.csv", "assets/mlb.csv"]
-# sport_name = 'NHL', 'NBA', 'NFL', 'MLB'
-# metro_data = pd.read_html("assets/wikipedia_data.html")[1].iloc[:-1,[0,3,5,6,7,8]].set_index('Metropolitan area')
+if __name__ == "__main__":
+    sport_data_paths = ["assets/nhl.csv", "assets/nba.csv", "assets/nfl.csv", "assets/mlb.csv"]
+    sport_name = 'NHL', 'NBA', 'NFL', 'MLB'
+    metro_data = pd.read_html("assets/wikipedia_data.html")[1].iloc[:-1,[0,3,5,6,7,8]].set_index('Metropolitan area')
 
-# for n in [0, 1, 2, 3]:
-#     processor = PreProcessData(metro_data, sport_name[n], sport_data_paths[n])
-#     processor.process_pop_data()
-#     print(processor.metro_data)
+    for n in [0, 1, 2, 3]:
+        processor = PreProcessData(metro_data, sport_name[n], sport_data_paths[n])
+        processor.process_pop_data()
+        print(processor.metro_data)

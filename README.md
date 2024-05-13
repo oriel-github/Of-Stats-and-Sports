@@ -28,4 +28,5 @@ Thus, Oakland Raiders will be mapped to the given region, 'San Francisco Bay Are
 
 ## Dataset
 Sourced from wikipedia on major sports teams according to their metropolitan regions (see [wikipedia_data.html](assets/wikipedia_data.html)).  
-We first had to preprocessed both this `html` as well as the `csv` data before conducting analysis. 
+We first had to preprocessed both this `html` as well as the `csv` data before conducting analysis.  
+Both `html` and `csv` files were courtesy of Coursera Machine Learning Module at University of Michigan.
