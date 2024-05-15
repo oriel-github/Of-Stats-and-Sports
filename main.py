@@ -56,4 +56,6 @@ if __name__ == "__main__":
     pop_data_filelink = 'https://en.wikipedia.org/wiki/List_of_American_and_Canadian_cities_by_number_of_major_professional_sports_franchises'
 
     analysis = PopulationPerformanceRelationship(sport_data_paths, pop_data_filelink)
-    print(analysis)
+    print(analysis.metro_corrs['NHL'].metro_data)
+    print()
+    print(analysis.metro_corrs['NHL'].data)

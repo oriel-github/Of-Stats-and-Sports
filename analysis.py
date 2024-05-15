@@ -13,21 +13,22 @@ class MetroCorrelations(Data):
         self.df = None
         self.coeff = None
 
+    def match_metro(self, team): 
+        team_matches = self.metro_data[self.sport].apply(lambda metro_teams: match_teams(metro_teams, team)).dropna()
+        if team_matches.empty: return 'Unknown Metro'
+        else: return team_matches.index[0]
+
     def get_team_metros(self):
-        def match_metro(row): 
-            matches = self.metro_data[self.sport].apply(lambda x: match_teams(x, row)).dropna()
-            if matches.empty: return 'No matching metro team'
-            else: return matches.index[0]
-        self.data['Metropolitan area'] = self.data['team'].apply(match_metro)
+        self.data['Metropolitan area'] = self.data['team'].apply(self.match_metro)
 
     def get_performances(self):
         self.data['W/L ratio'] = self.data['W'].apply(int) / (self.data['W'].apply(int) + self.data['L'].apply(int))
 
     def get_performances_by_metro(self):
-        self.data = self.data.drop(self.data.index[self.data['Metropolitan area'] == 'No matching metro team'])
         return self.data[['W/L ratio', 'Metropolitan area']].groupby('Metropolitan area').mean()
 
     def get_metro_performance_corr(self): 
+        ## Merge orders W/L ratio according to Metro order to calc correlation. Also removes 'Unknown Metro' bc inner-join
         self.df = self.metro_data.merge(self.get_performances_by_metro(), on='Metropolitan area')
         self.coeff = stats.pearsonr(self.df[self.pop_index()].apply(float), self.df['W/L ratio'])[0]
 
