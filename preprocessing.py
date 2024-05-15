@@ -14,8 +14,10 @@ class PreProcessData():
             if 'Population' in col: return col
 
     def process_pop_data(self):
+        pop_col = self.pop_index()
+        self.metro[pop_col] = self.metro[pop_col].replace("\[.*\]","", regex=True).replace(",","", regex=True)
         self.metro[self.sport] = self.metro[self.sport].replace("—", "").str.replace("\[.*\]","",regex=True)
-        self.metro_data = self.metro[self.metro[self.sport].str.contains('\w+')][[self.pop_index(),self.sport]]
+        self.metro_data = self.metro[self.metro[self.sport].str.contains('\w+')][[pop_col,self.sport]]
 
     def process_performance_data(self):
         self.data = self.data.drop(self.data.index[self.data['year'] != 2018])
