@@ -1,5 +1,6 @@
 import pandas as pd
 
+## Cleaning both population and sport data 
 class PreProcessData():
 
     def __init__(self, formatted_metro_data, sport, sport_file):
@@ -8,19 +9,22 @@ class PreProcessData():
         self.metro_data = None
         self.data = pd.read_csv(sport_file)
 
-    ## Add Assert if no pop data in tests
-    def pop_index(self):
+    ## Defined here to be used in parent and throughout all child classes
+    def pop_column_name(self):  
         for col in self.metro.columns: 
-            if 'Population' in col: return col
+            if 'Population' in col: return col  # Can't hard code column name because Wiki includes year in the name
+        raise Exception('No Population Data Column in Population file')  # Catches when no population data
 
+    ## Cleans population dataframe
     def process_pop_data(self):
-        pop_col = self.pop_index()
+        pop_col = self.pop_column_name()
         self.metro[pop_col] = self.metro[pop_col].replace("\[.*\]","", regex=True).replace(",","", regex=True)
         self.metro[self.sport] = self.metro[self.sport].replace("—", "").str.replace("\[.*\]","",regex=True)
         self.metro_data = self.metro[self.metro[self.sport].str.contains('\w+')][[pop_col,self.sport]]
 
+    ## Cleans sport dataframe
     def process_performance_data(self):
-        self.data = self.data.drop(self.data.index[self.data['year'] != 2018])
+        self.data = self.data.drop(self.data.index[self.data['year'] != 2018])  # The latest year from sport data csv's
         self.data = self.data.drop(self.data.index[self.data['team'].str.contains('FC')])
         self.data = self.data.drop(self.data.index[self.data['team'].str.contains('Division')])
         self.data['team'] = self.data['team'].replace('*','').replace('[*+]','', regex=True).replace("\(.*\)","", regex=True)

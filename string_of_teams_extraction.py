@@ -1,5 +1,9 @@
+## REGEX MODULE FOR SEPARATING SPORT TEAM NAMES FROM A SINGLE STRING OF WORDS WITH UNCERTAIN NUMBER OF SPORT TEAM NAMES
+## These functions were moved into separate file to declutter application classes from their primary methods
+
+## Helper function to return the passed string list with the presumed words of the unnamed team removed
 def remove_unnamed_team_words(words_sublist, no_words_to_remove):
-    for _ in range(no_words_to_remove): words_sublist.pop() ## Exclude words that will mess up function, e.g. '[place] NHL team'
+    for _ in range(no_words_to_remove): words_sublist.pop()  # passed list is such that the unnamed team is at the end 
     return words_sublist
 
 def handle_potential_team_name(words_sublist):
@@ -32,9 +36,11 @@ def get_teams_from_string(string): ## Splits all the individual team names from 
         return teams
     else: return words
 
+
+## Checks which metro team name the sport data team matches with if any
 def match_teams(metro_team_string, name_from_sport_data):
-    metro_teams = get_teams_from_string(metro_team_string)
-    metro_teams = list(filter(None, metro_teams))
+    metro_teams = get_teams_from_string(metro_team_string)  # Calls helper function to split string of teams into list of teams
+    metro_teams = list(filter(None, metro_teams))  # Clears [""], ["", ""] extraction outputs from get_teams_from_string
     for metro_team in metro_teams: 
         if metro_team in name_from_sport_data: return metro_team  # Metro team names don't have city/state so used as substring
 
