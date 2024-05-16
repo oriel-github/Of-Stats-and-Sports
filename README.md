@@ -5,7 +5,7 @@ We wish to conduct analysis on sports statistics to understand potential factors
 As that is an incredibly general inquiry, with many avenues of investigation, we focus our questions to: 
 
 **Are sport teams' performance correlated with the population of the area it's based in?**  
-**Is the performance distribution across the population for one sport the same across all sports?**  
+**Is the performance distribution for one sport the same across all sports?**  
 **If so, by what confidence do we know? And if not all the same, for which sports does that apply to?**  
 
 ### Approach
@@ -32,7 +32,7 @@ Thus, Oakland Raiders will be mapped to the given region, 'San Francisco Bay Are
 'Is the performance distribution ... **the same** across all sports' will be defined by t-tests at 95% Confidence.  
 Meaning to say if the mean performance data of a sport has a less than 5% chance of being what it is,  
 assuming that it shares 'the same' performance distribution of another sport as defined by their performance data,    
-then we reject the idea that the 2 sports have 'the same' performance behavior across the population.  
+then we reject the idea that the 2 sports have 'the same' performance behavior.    
 
 t-Tests and their p-values will be defined by `ttest_rel` (as calculated by Scipy's [ttest_rel class](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mstats.ttest_rel.html#scipy.stats.mstats.ttest_rel.html)).  
 
